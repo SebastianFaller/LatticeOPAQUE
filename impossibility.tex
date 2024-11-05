@@ -1,0 +1,53 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+\begin{theorem}
+    Let and two OPRF protocols $\OPRF$ and $\OPRFother$, where $\OPRFother$ does have computational input hiding and pseudo-randomness and $\OPRF$ has statistical input hiding and pseudo-randomness. 
+    If there is a black-box combiner $\Combiner(\OPRF,\OPRFother)$ then we can turn it into a combiner $\Combiner(\OPRF,\bot)$.
+\end{theorem}
+
+\paragraph{Proof Idea}
+ Because $\Combiner$ is a combiner it is secure as long as one of the components is secure.
+ That means
+ $\Combiner(\OPRF,\OPRFother)$ is secure if $\OPRF$ is secure. Importantly, $\OPRFother$ can be any protocol.
+ We define three different bad protocols that can be plugged into $\Combiner$ and analyze what the combiner does.
+ The bad protocols will expose which information the parties in $\Combiner$ cannot share with their counter party.
+
+ In a second step, we turn the game around and assume $\OPRFother$ is secure but $\OPRF$ is a bad protocol. Then, with the knowledge about $\Combiner$'s behavior from the step above, we can
+ conclude that $\Combiner(\OPRF,\OPRFother)$ cannot be pseudo-random anymore, which is a contradiction.
+
+ We denote the server in $\Combiner(\OPRF,\OPRFother)$ as $\Server^\Combiner$ and the user as $\User^\Combiner$.
+
+\begin{proof}
+ Let $\Combiner=\Combiner(\OPRF,\OPRFother)$ be a black-box combiner and let $\OPRF,\OPRFother$ be as in the statement. Without loss of generality, we assume that $\Combiner$ executes both protocols $\OPRF$ and $\OPRFother$ at least once.
+
+  By \emph{black-box}, we mean that both parties $\User$ and $\Server$ executing $\Combiner$ have oracle access to oracles
+  $\Blind(\cdot),\BlindEvaluate(\cdot,\cdot),\Finalize(\cdot,\cdot)$ and $\Blindother(\cdot),\BlindEvaluate(\cdot,\cdot)$, and $\Finalize(\cdot,\cdot)$, where $\OPRF=(\Blind,\BlindEvaluate,\Finalize)$ and $\OPRFother=(\Blindother,\BlindEvalother,\Finalizeother)$.
+
+ Because $\Combiner$ is a combiner, the combined protocol $\Combiner(\OPRF,\OPRFother)$ is secure, i.e.,
+ input hiding and pseudo-random if $\OPRF$ is secure (regardless of the security of $\OPRFother$).
+
+ \paragraph{Assume $\OPRF$ is secure}
+ We define $\Bad_1=(\Blind_1,\BlindEvaluate_1,\Finalize_1)$ to be the following OPRF protocol:
+ $\Blind(x)_1$ outputs the plain input $x$ as message and as state $x$. $\BlindEvaluate_1$ does nothing.
+ $\Finalize_1$ always outputs $0$. Clearly, this protocol is not input hiding (because the server learns the input in the clear) and it is not pseudo-random (because the output is constant 0).
+ By assumption, however, $\Combiner(\OPRF,\Bad_1)$ is secure and in particular, input hiding.
+ Intuitively, this means that $\Server^\Combiner$ must not see the outputs of the $\Blindother$ oracle as they leak $x$.
+ We consider two cases:
+ \begin{itemize}
+    \item If $\Combiner$ queries $\Blind$ on inputs $z$ that are independent of the OPRF input $x$, then $\Server^\Combiner$ may learn the outputs of the oracle $\Blind$.
+    \item If $\Combiner$ inputs a function of $x$ into the $\Blindother$ oracle, i.e., $\aother\gets\Blindother(g(x))$, then the output $\aother$ of the $\Blind$ oracle cannot be computed distinguished from $\Blindother(g(x'))$ for $x'\neq x$ even given the whole view of $\Server^\Combiner$, where $g$ is some efficiently computable function.
+ \end{itemize}
+
+ Next, we define $\Bad_2=(\Blind_2,\BlindEvaluate_2,\Finalize_2)$ to be the following OPRF protocol:
+ $\Blind(x)_2$ outputs the empty string $\bot$ as message and as state $\bot$. $\BlindEvaluate_2$ outputs the used key $\key$.
+ $\Finalize_2$ gets the $\key$ as input and outputs the key $\key$. This protocol is input hiding (because the input is discarded) but it is not pseudo-random (because the output is constant $\key$).
+ By assumption, however, $\Combiner(\OPRF,\Bad_2)$ is secure and in particular, pseudo-random.
+
+
+
+
+\end{proof}
+
+
+\sebastian{also regarding the 2Hash remark: The motivation is merely to get a combiner if someone does not like the DSLS assumption. People are fine with assuming OT or MPC.}

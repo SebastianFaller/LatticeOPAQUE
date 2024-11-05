@@ -1,0 +1,233 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+\subsection{Warm-up}
+For warming up, let's look at the round-optimal case as e.g., with 2HashDH~\cite{EC:JarKraXu18}.
+
+\begin{definition}[\cite{EC:TCRSTW22}]
+    \label{def:simple-oprf}
+    A round-optimal OPRF for the function $f$ is a tuple $\OPRF=(\Gen,\Blind,\BlindEvaluate,\Finalize)$ such that the following properties hold:
+    \begin{enumerate}
+        \item \emph{Correctness:} The client learns the output $f(\key,x)$. More precisely,
+            \[\Pr\left[f(\key,x)=y : 
+            \begin{matrix}
+                pp\gets\Gen(1^\secpar)\\
+                (a,\st)\gets\Blind(pp,x)\\
+                b\gets\BlindEvaluate(pp,\key,a)\\
+                y\gets\Finalize(pp,\st,b)
+            \end{matrix}
+            \right]=1-\negl(\secpar),\]
+            where the randomness is taken of the random coins consumed by $\OPRF$
+        \item \emph{Pseudo-randomness:}
+            The output of the protocol is indistinguishable from a truly random function even to maliciously behaving clients, i.e., 
+            \[
+               \advantPR\coloneqq \abs*{\Pr\left[\ExpPseudoR^{0}=1\right]-\Pr\left[\ExpPseudoR^{1}=1\right]} 
+              \leq\negl(\secpar)
+            ,\]
+            where $\ExpPseudoR^b$ is defined in \cref{fig:pseudorandomness}.
+            \item \emph{Input Privacy:} The server does not learn anything about the client's input.
+            More precisely, 
+            \[
+               \advantInputPrivTwo\coloneqq \abs*{\Pr\left[\ExpInputPrivTwo^{0}=1\right]-\Pr\left[\ExpInputPrivTwo^{1}=1\right]} 
+              \leq\negl(\secpar)
+            ,\]
+            where $\ExpInputPrivTwo^b$ is defined in \cref{fig:input-privTwo}.
+\end{enumerate}
+\end{definition}
+\sebastian{Also think about the straight-forward definition of input blindness, which is:}
+    for all PPT $\AdvA$ and inputs $x\in\InputSpace$ there exists a PPT simulator $\Sim$ such that
+    \[
+    \left\{
+        \AdvA(f(\key,x),a):
+    \begin{matrix}
+        pp\gets\Gen(1^\secpar)\\
+        (a,\st)\gets\Blind(pp,x)\\
+    \end{matrix}
+    \right\}
+    \compeq
+    \left\{
+        \AdvA(f(\key,x),a):
+    \begin{matrix}
+        pp\gets\Gen(1^\secpar)\\
+        a\gets\Sim(pp,f(\key,x))\\
+    \end{matrix}
+    \right\}.\]
+
+
+\begin{figure}
+    \fbox{
+    \begin{tabular}{lll}
+        \begin{tabular}{l}  
+            \textbf{Experiment $\ExpPseudoR^b$}\\
+            \midrule
+            $\randf\getsr\{g:\InputSpace\to\OutputSpace\}$\\
+            $pp\gets\Gen()$\\
+            $\key\getsr\KeySpace$\\
+            $\st_\Sim\gets \Sim.\Init(pp)$\\
+            $b'\gets\AdvA^{\Eval(\cdot),\BlindEvaluate(\cdot),\Prim(\cdot)}(pp)$\\
+            output $b'$
+        \end{tabular}&
+        \begin{tabular}{l} 
+            \textbf{Oracle $\Eval(x)$}\\
+            \midrule
+            $y_0\coloneqq f(\key,x)$\\
+            $y_1\coloneqq \randf(x)$\\
+            return $y_b$
+        \end{tabular}\\
+        \begin{tabular}{l}
+            \textbf{Oracle $\LimEval(x)$}\\
+            \midrule
+            $q_s \gets q_s+ 1$\\
+            if $q_s \leq q$: return $\Eval(x)$\\
+            else return $\bot$
+        \end{tabular}
+  &
+        \begin{tabular}{l}
+            \textbf{Oracle $\BlindEvaluate(\alpha)$}\\
+            \midrule
+            $q \gets q+ 1$\\
+            $\beta_0\gets\BlindEvaluate(pp,\key,\alpha)$\\
+            $(\beta_1,\st_\Sim')\gets\Sim.\BlindEvaluate^{\LimEval(\cdot)}(\alpha,\st_\Sim)$\\
+            return $\beta_b$
+        \end{tabular}\\
+        \begin{tabular}{l}
+            \textbf{Oracle $\Prim(x)$}\\
+            $y_0\coloneqq\RO(x)$\\
+            $(y_1,\st_\Sim')\coloneqq\Sim.\Prim^{\LimEval(\cdot)}(x,\st_\Sim)$\\
+            return $y_b$
+        \end{tabular}
+    \end{tabular}
+    }
+    \caption{The pseudo-randomness experiment as in \cite{EC:TCRSTW22}, where $f$ denotes the function that the $\OPRF$ protocol is computing.}
+    \label{fig:pseudorandomness}
+\end{figure}
+
+\begin{figure}
+    \fbox{
+    \begin{tabular}{ll}
+        \begin{tabular}{l}  
+            \textbf{Experiment $\ExpInputPrivOne^b$}\\
+            \midrule
+            $pp\gets\Gen()$\\
+            $\key\getsr\KeySpace$\\
+            % $i \coloneqq 0$\\
+            $b'\gets\AdvA^{\Trans(\cdot,\cdot),\RO(\cdot)}(pp,\key)$\\
+            output $b'$
+        \end{tabular}&
+        \begin{tabular}{l} 
+            \textbf{Oracle $\Trans(x_0,x_1)$}\\
+            \midrule
+            $(\alpha_{0},\st_{0})\gets\Blind(pp,x_0)$\\
+            $(\alpha_{1},st_{1})\gets\Blind(pp,x_1)$\\
+            $\beta_0\gets\BlindEvaluate(pp,\key,\alpha_0)$\\
+            $\beta_1\gets\BlindEvaluate(pp,\key,\alpha_1)$\\
+            $y_0\gets\Finalize(pp,\st_{0},\beta_0)$\\
+            $y_1\gets\Finalize(pp,\st_{1},\beta_1)$\\
+            $\tau_b \coloneqq (\alpha_{b},\beta_b,y_b)$\\
+            $\tau_{1-b} \coloneqq(\alpha_{1-b},\beta_{1-b},y_{1-b})$\\
+            return $(\tau_b,\tau_{1-b})$
+        \end{tabular} \\ 
+    \end{tabular}
+    }
+    \caption{The honest-but-curious-server input-privacy experiment as in \cite{EC:TCRSTW22}.}
+    \label{fig:input-privOne}
+\end{figure}
+
+\begin{figure}
+    \fbox{
+    \begin{tabular}{ll}
+        \begin{tabular}{l}  
+            \textbf{Experiment $\ExpInputPrivTwo^b$}\\
+            \midrule
+            $pp\gets\Gen()$\\
+            $i \coloneqq 0$\\
+            $b'\gets\AdvA^{\Req(\cdot,\cdot),\Fin(\cdot,\cdot,\cdot),\RO(\cdot)}(pp)$\\
+            output $b'$
+        \end{tabular}&
+        \begin{tabular}{l} 
+            \textbf{Oracle $\Req(x_0,x_1)$}\\
+            \midrule
+            $i\coloneqq i+1$\\
+            $(\alpha_{i,0},\st_{i,0})\gets\Blind(pp,x_0)$\\
+            $(\alpha_{i,1},st_{i,1})\gets\Blind(pp,x_1)$\\
+            return $(\alpha_{i,b},\alpha_{i,1-b})$
+        \end{tabular} \\ 
+        \begin{tabular}{l}
+            \textbf{Oracle $\Fin(j,\beta,\beta')$}\\
+            \midrule
+            if $j > i$ then return $\bot$ \\
+            $y_b\gets\Finalize(pp,\st_{j,b},\beta)$\\
+            $y_{1-b}\gets\Finalize(pp,\st_{j,1-b},\beta')$\\
+            return $(y_b,y_{1-b})$
+        \end{tabular}
+    \end{tabular}
+    }
+    \caption{The malicious-server input-privacy experiment as in \cite{EC:TCRSTW22}.\sebastian{Actually, this only makes sense for verifiable OPRFs.}}
+    \label{fig:input-privTwo}
+\end{figure}
+\paragraph{Input Privacy against malicious server.}
+\cite{EC:TCRSTW22} define two different flavours of the input blindness experiment.
+The first, \sebastian{Cref}, protects against an honest-but-curious adversary, while the second, \sebastian{Cref} protects against a malicious server.
+
+However, the way the second experiment is designed, it is not clear how to transfer this guarantee to the non-verifiable case. One could define the experiment without the verification in the second to last step:
+\[\text{If } y_0 = \bot \text{ or } y_1 = \bot \text{ then return } \bot.\]
+But then, non-verifiable OPRFs (like 2HashDH without ZKP) allow for a trivial attack (as already mentioned by \cite{EC:TCRSTW22}):
+\begin{itemize}
+    \item The adversary $\advA$ sends messages $x_0,x_1$ to the $\Req$ oracle and receives $\alpha_0,\alpha_1$ in return.
+    \item Like an honest server, $\advA$ chooses $\key\gets\KeySpace$ and sets $\beta_0\gets\BlindEvaluate(pp,\key,\alpha_0)$.
+    \item $\advA$ chooses $\key'\getsr\KeySpace$ and $\beta^*\gets\BlindEvaluate(pp,\key',\alpha)$ and gives $(\beta_0,\beta^*)$ to the $\Fin$ oracle.
+    \item The $\Fin$ oracle outputs $(y_0,y_1)$. $\advA$ can locally compute the expected OPRF output $y_0^*=F_\key(x_0)$. If $y_0=y_0^*$ then the $\advA$ outputs $b'=0$ and else $b'=1$
+\end{itemize}
+Note that if the experiment chooses $b=1$ then $\Fin$ will respond with $y_0\gets\Finalize(st_0,\beta^*)$. Thus, $y_0$ is computed under a different server key than $y_0^*$. If the OPRF is pseudorandom, then we have $y_0\neq y_0^*$ with overwhelming probability.
+
+\subsection{Original OPRF Definition}
+\label{sec:original-def}
+OPRFs were introduced by \cite{TCC:FreIshPinRei05}. Their definition looks as follows (adapted to the round-optimal case):
+\paragraph{Correctness and Client Privacy}
+Let $\family$ be a pseudo-random function family.
+
+\paragraph{Server Privacy}
+Consider the real-world experiment \cref{fig:exp-original-server-priv}.
+Intuitively, for all adversaries attacking the client in the real world, there is a simulator that
+efficiently simulates the view of this attacker even when the distinguisher is given $n$ additional evaluations of the PRF $f$.
+It holds for all $(x_1,\dots,x_n,w)\in\InputSpace^{n+1}$ and for all PPT malicious clients $\advA$ in $\ExpOGPrivReal$ that there exists a PPT simulator $\Sim$ that takes $w$ as input and outputs $(a,b,y)$
+such that 
+\[ \ExpOGPrivReal(x_1,\dots,x_n) \compeq (\Sim(w),\randf(x_1),\dots,\randf(x_n)),\]
+where $\randf$ is a random function $\randf:\InputSpace\to\OutputSpace$, and $\ExpOGPrivReal(x_1,\dots,x_n,w)$ denotes the output of $\ExpOGPrivReal$ on inputs $(x_1,\dots,x_n,w)$.
+
+\begin{figure}
+    \fbox{
+    \begin{tabular}{ll}
+        \begin{tabular}{l}  
+            \textbf{Experiment $\ExpOGPrivReal(x_1,\dots,x_n,w)$}\\
+            \midrule
+            $pp\gets\Gen()$\\
+            $\key\getsr\KeySpace$\\
+            $(a,\st)\gets\advA(pp,w)$\\
+            $b\gets\BlindEvaluate(pp,a,\key)$ \\
+            $y\gets\advA(pp,b,\st)$\\
+            output $(a,b,y,f(\key,x_1),\dots,f(\key,x_n))$
+        \end{tabular} 
+    \end{tabular}
+    }
+    \caption{The honest-but-curious-server input-privacy experiment as in \cite{EC:TCRSTW22}.}
+    \label{fig:exp-original-server-priv}
+\end{figure}
+
+
+\subsection{Universally Composable OPRFs}
+The gold standard is the UC definition of~\cite{ESP:JKKX16}.
+\sebastian{TODO: Add some inutition for the functionality here.}
+The full ideal functionality is depicted in \Cref{fig:lateExtractionOPRF}.
+
+Note that \Cref{def:simple-OPRF} does not trivially imply UC security.
+Beullens et al. give a general framework for constructing a UC secure OPRF. While pseudo-randomness implies OMU, there might be OPRFs that are secure with respect to \Cref{def:simple-oprf} but that are not WKCR.
+Also, there are constructions of UC secure OPRFs that do not fit in the
+framework from~\cite{EPRINT:BeuFalHes24}, e.g., 2HashDH.
+
+\sebastian{I'm very sure that \Cref{def:simple-oprf} does not imply
+UC security because it does not solve the "correlation" problem from
+our paper. But I cannot come up with a separating example :(}
+
+
+\input{implications}

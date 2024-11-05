@@ -1,0 +1,50 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+Try to get saPAKE \cite{EC:JarKraXu18}.
+Hash function $H:\bits^* \to \Zq^m$.
+\begin{figure}
+    \centering
+    \fbox{
+        \begin{tabular}{lcl}
+        \textbf{Client} $\Client(\pw)$ & & \textbf{Server} $\Server()$\\ \hdashline
+         & Public Setup & \\ 
+         & $\matA\gets\Zq^{n \times m}$ & \\ \hdashline
+         & Store Password File&   \\ 
+         & & $(\matC,\matT)\gets\TrapGen(n,m)$  \\ 
+        & \LLarrow[16]{$\matC$}&\\
+        $\vecs\gets\Zq^m$ & &\\
+        $\vece\gets \errorDist^n, e'\gets\errorDist$ & &\\
+        $\ct_1 = \colCA\vecs+\vece$ & &\\
+        $\ct_2 = H(\pw)^\top\vecs+e'+\mu\cdot\qhalf$ & &\\
+        $\ct_3 = H'(\pw,\mu)\oplus \akekey$ \codecomment{$\akekey$ will be the AKE keys}& &\\
+         & \LRarrow[16]{$\ct=(\ct_1,\ct_2,\ct_3)$} & store $\ct$\\ \hdashline
+          & Password Authentication & \\
+        $\vecx\gets\errorDist^n$& &\\
+        $\vect=H(\pw)^\top + \vecx^\top\matA$ & & \\
+         & \LRarrow[16]{$\vect$} & \\ 
+         & & $\vecy\gets\SamplePre(\matC,\matT,\vect)$\\
+         &\LLarrow[16]{$(\vecy,\ct)$} & \\
+        parse $(\ct_1,\ct_2,\ct_3)=\ct$ & & \\
+        Round $\ct_2-(\vecy^\top,\vecx^\top)\ct_1$ to get $\mu$& & \\
+        $\akekey\gets H(\pw,\mu)$ & & \\
+        Derive AKE keys from $\akekey$ & \fbox{AKE} & 
+        \end{tabular}
+    }
+    
+    \caption{Lattice OPAQUE.}
+    \label{fig:protocol}
+\end{figure}
+
+\paragraph{Correctness}
+\begin{align*}
+    \ct_2-(\vecy^\top,\vecx^\top)\ct_1 &=\ct_2 - (\vecy^\top,\vecx^\top)(\colCA\vecs+\vece)\\
+    &=\ct_2 - ((\vecy^\top,\vecx^\top)\colCA\vecs+(\vecy^\top,\vecx^\top)\vece)\\
+    &= \ct_2- ((\vecy^\top\matC-\vecx^\top\matA)\vecs + (\vecy^\top,\vecx^\top)\vece)\\
+    &= \ct_2 - ((\vect-\vecx^\top\matA)\vecs + (\vecy^\top,\vecx^\top)\vece)\\
+    &=\ct_2 - (\vect\vecs-\vecx^\top\matA\vecs + (\vecy^\top,\vecx^\top)\vece)\\
+    &=\ct_2 - (H(\pw)^\top\vecs + \vecx^\top\matA\vecs-\vecx^\top\matA\vecs + (\vecy^\top,\vecx^\top)\vece)\\
+    &=\ct_2 - (H(\pw)^\top\vecs + (\vecy^\top,\vecx^\top)\vece)\\
+    &=H(\pw)^\top\vecs+e'+\mu\cdot\qhalf -(H(\pw)^\top\vecs + (\vecy^\top,\vecx^\top)\vece) \\
+    &=\underbrace{e'}_{\text{short}}+\mu\cdot\qhalf \underbrace{-  (\vecy^\top,\vecx^\top)\vece}_{\text{short}} \\
+\end{align*}

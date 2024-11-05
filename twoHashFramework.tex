@@ -1,0 +1,19 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+
+Beullens et al. \cite{EPRINT:BDFH24} presented a generic framework for building UC-secure OPRFs from a function family that admits evaluation of the function with a secure function evaluation protocol (i.e., a MPC protocol for the function's circuit) and that additionally satisfies two security requirements,
+namely, one-more unpredictability (omu), weak key-collision resistance (wkcr), UC-realizes $\FlateExtract$.
+
+This immediately yields a way of combining two OPRFs that are constructed
+using this framework. If there are two function families
+$\family$, $\family'$ where one of the families has omu and wkcr then the concatenation of both functions is still omu and wkcr. Executing the respective secure function evaluation (SFE) protocol for both functions in parallel yields an SFE protocol for the concatenated function family.
+
+This approach is especially appealing from a practical point of view as it 
+allows to simply execute two existing implementations of two OPRFs in parallel and then hash the result together.
+
+Unfortunately, the 2Hash framework of \cite{EPRINT:BDFH24} does not capture 2HashDH, because the \enquote{blinded exponentiation} protocol of 2HashDH is \emph{not} a SFE protocol. In the following, we adapt the SFE functionality to also capute 2HashDH's blinded exponentiation and \sebastian{hopefully} show that
+the weaker SFE functionality is sufficiently strong to be used in the 2Hash framework of \cite{EPRINT:BDFH24}.
+
+
+\input{fig_funcwFERI}

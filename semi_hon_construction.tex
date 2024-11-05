@@ -1,0 +1,114 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+
+\paragraph{Masking with PRF values.}
+Let $\OPRF$ and $\OPRFother$ be two OPRFs. This is a three flow protocol:
+\begin{figure}
+    \centering
+    \fbox{
+        \begin{tabular}{lcl}
+        \textbf{Client} $\Client(x)$ & & \textbf{Server} $\Server(\keyother)$\\
+         & & $(a_0,\st_0)\gets\Blind(0)$\\
+         & \LLarrow{$(a_0,a_1)$} &  $(a_1,\st_1)\gets\Blind(1)$\\
+        Choose $\key\gets\KeySpace$ & & \\
+        $(\aother,\stother)\gets\Blindother(x)$ & & \\
+        $b_0\gets \BlindEvaluate(\key,a_0)$ & & \\
+        $b_1\gets\BlindEvaluate(\key,a_1)$ & & \\
+        $m_0=F_{\key}(0)$\\
+        & \LRarrow[16]{$\msg_0=(m_0\oplus \aother, b_0,b_1)$} & \\
+            & & $m_0 \gets \Finalize(0,\st_0,b_0)$ \\
+            & & $m_1 \gets \Finalize(1,\st_1,b_1)$ \\ 
+            & & $\aother = \msg_0\oplus m_0$\\
+            & & $\bother =\BlindEvalother(\keyother,\aother)$ \\
+            & \LLarrow[16]{$\msg_1=m_1\oplus \bother$}& \\
+            $m_1=F_{\key}(1)$ & & \\
+            $\bother = \msg_1\oplus m_1$ & & \\
+            Output $\Finalize(x,\stother,\bother)$ 
+        \end{tabular}
+    }
+    \caption{The combiner masking with PRF values $\CombMasked(\OPRF,\OPRFother)$.}
+    \label{fig:combinerMasking}
+\end{figure}
+
+As long as $\OPRF$ is pseudo-random $\OPRFother$ does not need blindness.
+That means, if both OPRFs are pseudo-random and correct, then I think this combiner is input-blind and pseudo-random.
+Note that this combiner only requires pseudo-randomness to hold for the two OPRFs. Both protocols might not have input blindness.
+\begin{theorem}
+    Let $\OPRF$ and $\OPRFother$ have pseudo-randomness. Then, $\CombMasked(\OPRF,\OPRFother)$ is a OPRF combiner considering only semi-honest server corruption and malicious client corruptions.    
+\end{theorem}
+\begin{proof}
+    \sebastian{TODO}
+\end{proof}
+
+
+\paragraph{The special case of 2HashDH}
+In practice, the most efficient known construction is 2HashDH. With just two group elements going over the network, two exponentiations for the client and one exponentiation for the server, 
+it is astonishingly efficient and it is hard to imagine an even more efficient construction.
+This means, that one would always choose 2HashDH as the \emph{classical} OPRF and then combine it with some post-quantum secure OPRF.
+
+In this paragraph, we propose a combiner for that situation. We first, employ a public key encryption scheme $\PKE=(\KeyGen,\Enc,\Dec)$ that is IND-CCA secure under CDH, e.g., DHIES \cite{CT-RSA:AbdBelRog01}.
+We write $\OPRFTwoH=(\BlindTwoH,\BlindEvalTwoH,\FinalizeTwoH)$ for 2HashDH and we assume an OPRF $\OPRFPQ=(\BlindPQ,\BlindEvalPQ,\FinalizePQ)$
+that has input blindness and pseudo-randomness under some assumption $\PQ$ (think of some post-quantum assumption, e.g., LWE).
+\begin{figure}
+    \centering
+    \fbox{
+        \begin{tabular}{lcl}
+        \textbf{Client} $\Client(x,\pkS)$ & & \textbf{Server} $\Server(\key,\pkS,\skS)$\\
+        $(\aTwoH,\stTwoH)\gets\Blind(x)$ & & parse $\key=(\keyTwoH,\keyPQ)$\\
+        $(\aPQ,\stPQ)\gets\BlindPQ(x)$ & & \\
+        $c\gets\Enc(\pk,\aPQ)$ & \LRarrow[16]{$(c,\aTwoH,\pkC)$} & \\
+            & & $\aPQ\gets\Dec(\skS,c)$ \\
+            & & $\bPQ\gets\BlindEvalPQ(\keyPQ,\aPQ)$\\
+            & & $\bTwoH\gets\BlindEvalTwoH(\keyTwoH,\aTwoH)$\\
+            & & $c'\gets\Enc(\pkC,\bPQ)$\\
+            & \LLarrow[16]{$(\bTwoH,c')$}& \\
+            $\bPQ\gets\Dec(\skC,c')$ & & \\
+            $\yPQ\gets\FinalizePQ(x,\bPQ)$ & & \\
+            $\yTwoH\gets\FinalizeTwoH(x,\bTwoH)$ & & \\
+            Output $\yTwoH \oplus \yPQ$ & & 
+        \end{tabular}
+    }
+    \caption{The combiner $\CombPKE(\OPRFTwoH,\OPRFPQ)$. Server runs $(\pkS,\skS)\gets\KeyGen()$ before the execution and Client gets $\pkS$. }
+    \label{fig:combiner}
+\end{figure}
+Now, we distinguish two cases: First we assume that the OMDH assumption holds that underlies the pseudorandomness of 2HashDH but not the PQ assumption $\PQ$.
+OMDH implies CDH and thus, the security of $\PKE$.
+
+In the second case, we assume that the post-quantum assumption $\PQ$ holds but CDH does not (and thus 2HashDH is not pseudorandom anymore.)
+
+\begin{lemma}
+    Let $\OPRFTwoH$ have input-privacy, pseudo-randomness, and $\PKE$ have IND-CPA security. Then $\CombPKE(\OPRFTwoH,\OPRFPQ)$ is a OPRF combiner considering semi-honest server corruption and malicious client corruptions.
+\end{lemma}
+\begin{proof}
+    \sebastian{TODO}
+\end{proof}
+
+\begin{lemma}
+    Let $\OPRFPQ$ have input-privacy and pseudorandomness. ($OPRFTwoH$ and $\PKE$ might be insecure). Then $\CombPKE(\OPRFTwoH,\OPRFPQ)$ is a OPRF combiner.
+\end{lemma}
+\begin{proof}
+    \sebastian{TODO}
+\end{proof}
+
+\paragraph{Stat. vs. comp. input blindness and pseudor-randomness.}
+In table \cref{tab:comp-vs-stat} there is an overview on how OPRFs from the literature (presumably) satisfy input blindness and pseudo-randomness.
+
+\begin{table}
+    \centering
+    \begin{tabular}{lccl}
+        \toprule
+        \textbf{OPRF} & \textbf{Input Blindness} & \textbf{Pseudo-randomness} & \textbf{Comment}\\
+        \midrule
+        2HashDH \cite{ESP:JKKX16} & s & c & RO \\
+        NR-OT  \cite{TCC:FIPR05}  & s & c & OT has s receiver privacy and c sender security in e.g., NP-OT~\cite{SODA:NaoPin01} or CO-OT~\cite{LC:ChoOrl15}.\\
+        NR-Hom~\cite{AC:JarKiaKra14} & c & c & IB is security of Hom. Enc. and PR is NR-PRF.\\
+        DY-Hom~\cite{ES:CamLeh17} & s & c & not looking at ZK proofs.\\
+        Leg-OPRF~\cite{EPRINT:BDFH24} & ? & c & \sebastian{Depends on how exactly VOLE works}\\
+        \bottomrule
+    \end{tabular}
+    \label{tab:comp-vs-stat}
+    \caption{Computational vs. statistical input blindness and pseudo-randomness. The letter 'c','s', and 'p' indicate that the respective property holds computational, statistically, or perfectly.}
+\end{table}
+
+\sebastian{Would be nice to have more PQ instantiations listed.}

@@ -1,0 +1,60 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+
+\begin{figure}
+    \hspace*{-0.075\textwidth}\fbox{
+        \parbox{\funcwidth}{
+            \begin{center} \textbf{Ideal OPRF functionality} \end{center} 
+            
+            The OPRF functionality is parameterized by a public PRF output length $\secpar$ and a function $f:\InputSpace \times \KeySpace \rightarrow \OutputSpace$.
+            It maintains functions $\Hone$, $\Tpreview(\cdot,\cdot)$, $\Fhon{\cdot}, \Fmal{\cdot}$ initially undefined everywhere, an initially empty set $\Tprogrammed$ and an initially empty list $\advkeys$ of adversarial keys. The first time an undefined value $\Fhon{x}$, $\Fmal{x,K}$, or $\Tpreview(x,i)$ is referenced, $\FlateExtract$ chooses $r\getsr \bits^\secpar$ and sets $\F{i}{x} \coloneqq r$, or $\Tpreview(x,i)\coloneqq r$. Similarly, if $\Hone(x)$ is referenced for the first time $\FlateExtract$ chooses $h \getsr \InputSpace$ and sets $\Hone(x)\coloneqq r$. \\
+            
+            \emph{Initialization:} \\ On message $(\Init, sid)$ from party $S$, if this is the first $\Init$ message for $sid$ send $(\Init, sid, S)$ to $\advA$. From now on use the tag $S$ to denote the unique entity which sent the $\Init$ message for the session identifier $sid$. (Ignore all subsequent $\Init$ messages for $sid$.)\\
+            
+            
+            \emph{Server compromise:} \\ On message $(\Compromise, sid)$ from $\advA$, declare $S$ as $\Compromised$. \\
+            Note: Message $(\Compromise, sid)$ requires permission from the environment. \codecomment{If $S$ is corrupted, then it is declared $\Compromised$ as well.} \\
+            
+            \emph{Offline evaluation of honest function:} \\ On $(\OfflineEval, sid ,ssid , x)$ from $P\in\{S,\advA\}$, ignore if $P=\advA$ and $S$ is not $\Compromised$. Otherwise, send $(\OfflineEval, sid, ssid, \Fhon{x})$ to $P$.\\
+
+            \emph{Offline evaluation of adversarial functions:} \\ On $(\OfflineEval, sid ,ssid , \key^*, x)$ from $\advA$, \greybox{run $\Correlate(\key^*)$}, and send $(\OfflineEval, sid, ssid, \Fmal{x,\key^*})$ to $\advA$.\\
+            
+            \emph{Online evaluation:}
+            \begin{compactitem}
+                \item On $(\Eval, sid, ssid, S', x)$ from $P \in \{U, \advA\}$, send $(\Eval, sid, ssid, P, S')$ to $\advA$. Record $\langle ssid,P,x\rangle$
+                \item On $(\SndrComplete, sid, ssid')$ from $S$, send $(\SndrComplete, sid, ssid', S)$ to $\advA$, record $\record{\Server,\ssid}$.
+                \item On $(\RcvCompleteHon, sid, ssid, P)$ from $\advA$, ignore this message if there is no record $\langle ssid,P,x\rangle$ stored. Else:
+                \begin{compactitem}
+                    \item If $S$ is not $\Compromised$, ignore this message if there is no record $\record{\Server,\ssid}$
+                    \item Send $\left(\Eval,sid,ssid,\Fhon(x)\right)$ to $P$.
+                \end{compactitem}
+                \item On $(\RcvCompleteMal, sid, ssid, P, \key^*)$ from $\advA$, with $\key^* \in \KeySpace$, ignore this message if there is no record $\langle ssid,P,x\rangle$ stored. Otherwise, \greybox{run $\Correlate(\key^*)$} and send $\left(\Eval,sid,ssid,\Fmal{x,\key^*}\right)$ to $P$. \\
+            \end{compactitem}
+        \vspace*{-0.3cm}
+        \greyboxx{\funcwidth}{
+        \emph{Random oracles:}\\
+        On $(\Hone, \sid, x)$ from $\advA$, reply with $(\Hone,\sid,\Hone(x))$.\\
+        On $(\Htwo, sid , x, y^*)$ from $\advA$:
+            \begin{compactitem}
+                \item For the oldest element $\key^*$ in $\advkeys$ that satisfies $f(\Hone(x),\key^*)=y^*$, set $t\gets\Fmal{x,\key^*}$.\sebastian{When is this case reached?}
+                \item If there is no such element, set $t\gets\Tpreview(x,y^*)$
+                \item Send $(\Htwo, sid, t)$ to $P$\\
+            \end{compactitem}
+            
+        Procedure \Correlate$(\key^*)$: \codecomment{Assign previewed values to the $\F{\key^*}{}$ function table}
+        \begin{compactitem} 
+         \item Append $\key^*$ to $\advkeys$.
+         \item For all $(x,y)\in \domain(\Tpreview)\setminus\Tprogrammed$ with $f(\Hone(x),\key^*)=y$:
+         \begin{compactitem} 
+          \item Set $\Fmal{\key^*, x} \coloneqq \Tpreview(x,y)$
+          \item Add $(x,y)$ to $\Tprogrammed$
+         \end{compactitem}
+        \end{compactitem}
+        }
+    }
+    }
+    \caption{Ideal OPRF functionalities: $\funcOPRF$ \cite{ESP:JKKX16} (without gray parts) and $\FlateExtract$ (including gray parts).}
+    \label{fig:lateExtractionOPRF}
+\end{figure}
+

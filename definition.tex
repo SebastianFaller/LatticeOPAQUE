@@ -1,0 +1,21 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+% \begin{definition}[Black-Box OPRF combiner]
+%     A \emph{Black-Box OPRF Combiner} is a protocol $\pi$ that uses two subroutines $\pi_0,\pi_1$ and that UC-realizes $\funcOPRF$ if at least one of $\pi_0$ or $\pi_1$ UC-realizes $\funcOPRF$.
+% \end{definition}
+
+% \paragraph{Discussion}
+% \begin{itemize}
+%     \item This might be too strong a requirement. 
+%     Depending on the combiner, it might be ok if $\pi_0,\pi_1$ do not UC-realize $\funcOPRF$ but something weaker (like e.g. omu and wkcr). But for now, it's a start.
+%     \item Also, in the definition --as is-- there is no distinction on \emph{what} breaks. Actually, it would be good to express somehow that a part of one of the schemes might still be fine (because it holds statistically).
+%     \item We might also want to look at non-black-box combiners later, e.g., when looking at 2Hash-style OPRFs.
+% \end{itemize}
+
+\begin{definition}[OPRF combiner]
+    Let $\pi_0,\pi_1$ be OPRF protocols that are not necessarily secure according to \Cref{def:simple-oprf}, i.e., they might lack some or all of the required properties. 
+    A \emph{OPRF Combiner} is an OPRF $\Combiner(\pi_0,\pi_1)$ that uses $\pi_0,\pi_1$ in a black-box manner and that 
+    is a secure OPRF according to \Cref{def:simple-oprf}.
+\end{definition}
+

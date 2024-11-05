@@ -1,0 +1,270 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+\newcommand{\funcwidth}{1.15\textwidth} %used for both the func box and the greybox
+
+
+
+\newcommand{\AdvA}{\ensuremath{\mathcal{A}}}
+\newcommand{\advA}{\AdvA}
+\newcommand{\Adv}{\ensuremath{\mathcal{A}}}
+\newcommand{\advB}{\ensuremath{\mathcal{B}}}
+\newcommand{\Sim}{\ensuremath{\mathcal{S}}}
+\newcommand{\Env}{\ensuremath{\mathcal{Z}}}
+\newcommand{\cha}{\ensuremath{\mathcal{C}}}
+\newcommand{\Func}{\ensuremath{\mathcal{F}}}
+\newcommand{\getsr}{\xleftarrow{\smash{\raisebox{-1.75pt}{$\scriptscriptstyle\$$}}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\G}{\ensuremath{\mathbb{G}}}
+\newcommand{\A}{\ensuremath{\mathbf{A}}}
+\newcommand{\B}{\ensuremath{\mathbf{B}}}
+\newcommand{\Fq}{\ensuremath{\mathbb{F}_\FieldSize}}
+\newcommand{\FieldSize}{q}
+\newcommand{\compeq}{\overset{\smash{\raisebox{-1.75pt}{$\scriptscriptstyle c$}}}{\approx}}
+\newcommand{\concat}{\Vert}
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\msg}{\mathrm{msg}}
+\newcommand{\PKE}{\mathrm{PKE}}
+\newcommand{\poly}{\mathrm{poly}}
+\newcommand{\hybrid}{\mathcal{H}}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%              
+\DeclarePairedDelimiter\record{\langle}{\rangle}%
+
+\newcommand{\cind}{\ensuremath{\stackrel{c}{\approx}}}
+\newcommand{\bits}{\ensuremath{\{0,1\}}}
+\newcommand{\SEC}{\ensuremath{\lambda}}
+\newcommand{\secpar}{\SEC}
+\newcommand{\Setup}{\mathsf{Setup}}
+\newcommand{\Gen}{\mathsf{Gen}}
+\newcommand{\ppt}{PPT~}
+\newcommand{\Enc}{\mathsf{Enc}}
+\newcommand{\Dec}{\mathsf{Dec}}
+\newcommand{\KeyGen}{\mathsf{KeyGen}}
+\newcommand{\Sign}{\mathsf{Sign}}
+\newcommand{\Vfy}{\mathsf{Vfy}}
+\newcommand{\Prove}{\mathsf{Prove}}
+\newcommand{\Vf}{\mathsf{Vf}}
+\newcommand{\Share}{\mathsf{Share}}
+% \newcommand{\Combine}{\mathsf{Combine}}
+\newcommand{\pk}{\mathsf{pk}}
+\newcommand{\sk}{\mathsf{sk}}
+\newcommand{\pkS}{\pk_{\Server}}
+\newcommand{\pkC}{\pk_{\Client}}
+\newcommand{\skC}{\sk_{\Client}}
+\newcommand{\skS}{\sk_{\Server}}
+\newcommand{\vk}{\mathsf{vk}}
+\newcommand{\group}{\G}
+
+\newcommand{\define}{\coloneqq}
+\newcommand{\codecomment}[1]{\textcolor{gray}{//#1}}
+%Combiner
+\newcommand{\PQ}{\mathrm{PQ}}
+\newcommand{\TwoH}{\mathrm{2H}}
+\newcommand{\Combiner}{\mathcal{C}}
+\newcommand{\CombParallel}{\Combiner^{\mathrm{par}}(\OPRF,\OPRFother)}
+\newcommand{\CombSequential}{\Combiner^{\mathrm{seq}}(\OPRF,\OPRFother)}
+\newcommand{\CombMasked}{\Combiner^{\mathrm{mask}}}
+\newcommand{\CombPKE}{\Combiner^{\mathrm{pke}}}
+
+\newcommand{\fother}{f'}
+\newcommand{\Blindother}{\Blind'}
+\newcommand{\BlindEvalother}{\BlindEvaluate'}
+\newcommand{\Finalizeother}{\Finalize'}
+\newcommand{\OPRFother}{\OPRF'}
+\newcommand{\keyother}{K'}
+\newcommand{\yother}{y'}
+\newcommand{\KeySpaceother}{\mathcal{K}'}
+\newcommand{\aother}{\alpha'}
+\newcommand{\bother}{\beta'}
+\newcommand{\stother}{\st'}
+
+%OPRF
+\newcommand{\pw}{\mathsf{pw}}
+\newcommand{\Bad}{\mathsf{Bad}}
+\newcommand{\func}{\mathcal{F}}
+\newcommand{\funcOPRF}{\func_{\mathrm{OPRF}}}
+\newcommand{\Eval}{\mathsf{Eval}}
+\newcommand{\LimEval}{\mathsf{LimEval}}
+\newcommand{\Prim}{\mathsf{Prim}}
+\newcommand{\Blind}{\mathsf{Blind}}
+\newcommand{\BlindTwoH}{\mathsf{Blind}_\TwoH}
+\newcommand{\BlindPQ}{\mathsf{Blind}_\PQ}
+\newcommand{\BlindEvaluate}{\mathsf{BlindEval}}
+\newcommand{\BlindEvalPQ}{\mathsf{BlindEval}_\PQ}
+\newcommand{\BlindEvalTwoH}{\mathsf{BlindEval}_\TwoH}
+\newcommand{\Finalize}{\mathsf{Finalize}}
+\newcommand{\FinalizeTwoH}{\mathsf{Finalize}_\TwoH}
+\newcommand{\FinalizePQ}{\mathsf{Finalize}_\PQ}
+\newcommand{\OPRF}{\mathsf{OPRF}}
+\newcommand{\OPRFTwoH}{\mathsf{OPRF}_\TwoH}
+\newcommand{\OPRFPQ}{\mathsf{OPRF}_\PQ}
+\newcommand{\key}{K}
+\newcommand{\keyTwoH}{K_\TwoH}
+\newcommand{\keyPQ}{K_\PQ}
+\newcommand{\yTwoH}{y_{\TwoH}}
+\newcommand{\yPQ}{y_{\PQ}}
+\newcommand{\KeySpace}{\mathcal{K}}
+\newcommand{\aTwoH}{\alpha_\TwoH}
+\newcommand{\bTwoH}{\beta_\TwoH}
+\newcommand{\aPQ}{\alpha_\PQ}
+\newcommand{\bPQ}{\beta_\PQ}
+\newcommand{\stPQ}{\st_\PQ}
+\newcommand{\stTwoH}{\st_\TwoH}
+\newcommand{\OutputSpace}{\mathcal{Y}}
+\newcommand{\InputSpace}{\mathcal{X}}
+\newcommand{\YY}{\mathcal{Y}}
+\newcommand{\KK}{\mathcal{K}}
+\newcommand{\disting}{\mathcal{D}}
+\newcommand{\st}{\mathrm{st}}
+\newcommand{\family}{\mathcal{F}}
+\newcommand{\randf}{\mathrm{rand}}
+
+% F_OPRF
+\newcommand{\domain}{\mathsf{dom}}
+\newcommand{\sid}{\mathrm{sid}}
+\newcommand{\ssid}{\mathrm{ssid}}
+\newcommand{\OfflineEval}{\textsc{OfflineEval}}
+\newcommand{\Init}{\textsc{Init}}
+\newcommand{\Compromise}{\textsc{Compromise}}
+\newcommand{\Compromised}{\textsc{Compromised}}
+\newcommand{\SndrComplete}{\textsc{SndrComplete}}
+\newcommand{\RcvComplete}{\textsc{RcvComplete}}
+\newcommand{\RcvCompleteHon}{\textsc{RcvCompleteHonest}}
+\newcommand{\RcvCompleteMal}{\textsc{RcvCompleteMalicious}}
+\newcommand{\tx}{tx}
+\newcommand{\F}[2]{\mathrm{F}_{#1}(#2)}
+\newcommand{\Fhon}{\func_{\mathrm{hon}}}
+\newcommand{\fcorroprf}{\mathcal{F}_{\text{corOPRF}}}
+\newcommand{\fcoroprf}{\fcorroprf}
+\newcommand{\fcorroprfprfx}{\mathcal{F}_{\text{corOPRF}} \text{ with prefixes}}
+\newcommand{\advkeys}{\mathcal{K}}
+\newcommand{\advids}{\mathcal{I}}
+\newcommand{\Fmal}[1]{{F_{\text{malicious}}}(#1)}
+\newcommand{\SimUC}{\Sim_{\mathrm{UC}}}
+
+
+% For F_OPRF^late-extract
+\newcommand{\Fcor}{f}
+\newcommand{\FlateExtract}{\mathcal{F}_{\text{2H-OPRF}}^{\Fcor}}
+\newcommand{\Tpreview}{\Table_{\text{preview}}}
+\newcommand{\Tprogrammed}{\Table_{\text{programmed}}}
+\newcommand{\Correlate}{\textsc{Correlate}}
+\newcommand{\Preview}{H_2}
+\newcommand{\Tseen}{\advkeys}
+\newcommand{\Table}{T}
+\newcommand{\Tkey}{\Table_{\mathrm{key}}}
+\newcommand{\ProtocolOuter}{\Pi^{\mathrm{outer}}}
+
+% F_FERI
+\newcommand{\User}{\mathrm{U}}
+\newcommand{\funcFERI}{\func_{\text{FERI}}}
+\newcommand{\funcwFERI}{\func_{\text{wFERI}}}
+\newcommand{\identity}{\mathrm{id}}
+\newcommand{\UserEval}{\mathsf{UsrEval}}
+% \newcommand{\ServerEval}{\mathsf{ServerEval}}
+\newcommand{\userinput}{\mathsf{userinput}}
+\newcommand{\CorruptUserEval}{\mathsf{CorruptUserEval}}
+\newcommand{\ServerEval}{\mathsf{ServerEval}}
+\newcommand{\serverStarted}{\mathsf{server}}
+\newcommand{\HonestComplete}{\mathsf{HonestComplete}}
+\newcommand{\MaliciousComplete}{\mathsf{MaliciousComplete}}
+
+%%Gray boxes:
+\newcommand{\greybox}[1]{\colorbox{lightgray!80}{#1}}
+
+\newcommand\greyboxx[2]{%
+  \vskip\baselineskip%
+  \par\noindent\colorbox{lightgray!80}{%
+    \begin{minipage}{#1}#2\end{minipage}%
+  }
+}
+
+% Protocols
+\newcommand{\LRarrow}[2][\veclen]{       
+  \unitlength1ex
+  \begin{picture}(#1,1.25)
+  \put(0,0.25){\vector(1,0){#1}}
+  \put(0,0.75){\makebox(#1,2){#2}}
+  \end{picture}
+}
+\newcommand{\LLarrow}[2][\veclen]{
+  \unitlength1ex
+  \begin{picture}(#1,1.25)
+  \put(#1,0.25){\vector(-1,0){#1}}
+  \put(0,0.75){\makebox(#1,2){#2}}
+  \end{picture}
+}
+\def\veclen{20}
+% Games and Advantage
+\newcommand{\advantage}[2]{\mathbf{Adv}^{#1}_{#2}}
+\newcommand{\ExpPseudoR}{\mathrm{ExpPR}_{\Sim,\RO,\advA}}
+\newcommand{\ExpInputPrivOne}{\mathrm{ExpPriv1}_{\advA}}
+\newcommand{\advantInputPrivOne}{\advantage{\mathrm{oprf-priv1}}{\advA}(\secpar)}
+\newcommand{\ExpInputPrivTwo}{\mathrm{ExpPriv2}_{\advA}}
+\newcommand{\ExpOGPrivReal}{\mathrm{ExpOGPrivReal}_{\advA}}
+\newcommand{\advantInputPrivTwo}{\advantage{\mathrm{oprf-priv2}}{\advA}(\secpar)}
+\newcommand{\advantPR}{\advantage{\mathrm{oprf-pr}}{\Sim,\RO,\advA}(\secpar)}
+
+% Oracles
+\newcommand{\Trans}{\mathrm{Trans}}
+\newcommand{\Req}{\mathrm{Req}}
+\newcommand{\Fin}{\mathrm{Fin}}
+\newcommand{\RO}{\mathrm{RO}}
+\newcommand{\Hone}{\mathrm{H}_1}
+\newcommand{\Htwo}{\mathrm{H}_2}
+%tables
+\newcommand{\tablecross}{\ding{53}}
+\newcommand{\tablecheckmark}{\ding{51}}
+\newcommand{\yes}{\ding{108}}
+\newcommand{\no}{\ding{109}}
+
+% Parties
+\newcommand{\PartyP}{\mathcal{P}}
+\newcommand{\Spi}{\Sim_\pi}
+\newcommand{\Server}{\mathrm{S}}
+\newcommand{\Client}{\mathrm{C}}
+
+% Lattice OPAQUE
+\newcommand{\akekey}{\zeta}
+
+% Lattices
+\newcommand{\TrapGen}{\mathsf{TrapGen}}
+\newcommand{\SamplePre}{\mathsf{SamplePre}}
+\newcommand{\Zq}{\mathbb{Z}_q}
+\newcommand{\matA}{\mathbf{A}}
+\newcommand{\matT}{\mathbf{T}}
+\newcommand{\matC}{\mathbf{C}}
+\newcommand{\vecs}{\mathbf{s}}
+\newcommand{\vect}{\mathbf{t}}
+\newcommand{\vecu}{\mathbf{u}}
+\newcommand{\vece}{\mathbf{e}}
+\newcommand{\vecx}{\mathbf{x}}
+\newcommand{\vecy}{\mathbf{y}}
+\newcommand{\qhalf}{\lfloor q/2 \rfloor}
+\newcommand{\errorDist}{\chi}
+\newcommand{\ct}{\mathsf{ct}}
+\newcommand{\colCA}{
+  \begin{pmatrix}
+    \matC \\ -\matA
+  \end{pmatrix}
+}
+
+% Theorems
+\newtheorem{definition}{Definition}
+
+
+% People's comments
+\ifdefined\IsCommented
+\newcommand{\sebastian}[1]{\textcolor{orange}{\textbf{SF:} #1}}
+
+
+\else
+\newcommand{\sebastian}[1]{}
+\newcommand{\todo}[1]{}
+\fi
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}

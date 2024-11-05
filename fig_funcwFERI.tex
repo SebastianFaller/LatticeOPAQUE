@@ -1,0 +1,114 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+\begin{figure}
+    \hspace*{-0.075\textwidth}
+    \fbox{
+        \parbox{\funcwidth}{
+            \begin{center} \textbf{Ideal functionality $\funcFERI^f$} \end{center} 
+            Parametrized by a function $f: \InputSpace \times \KeySpace \to \bits^*$\\
+
+            Maintains (for itself) a random function $\Hone: \bits^* \to\InputSpace$\\
+
+            On input $\Init$ from $\Server$ , sample $\key$ from $\KeySpace$.\\
+
+            On input $(\UserEval, \ssid, x)$ from $\User$, store $(\userinput, \ssid, x, \Hone(x))$\\
+
+            On input $(\CorruptUserEval, \ssid, h)$ from $\User$ with $h \in \InputSpace$, 
+            \begin{compactitem}
+               \item ignore if $\User$ is not corrupt 
+               \item otherwise store $\record{userinput, ssid, \bot , h}$
+            \end{compactitem} 
+
+            On input $(\ServerEval, \ssid)$ from $\Server$ store $\record{\serverStarted, ssid}$\\
+
+            On input $(\HonestComplete, \ssid)$ from $\advA$, if there are records $(\userinput, \ssid, x, h)$ and $(\serverStarted, \ssid)$ output $f(h,k)$ to $\User$\\ 
+
+            On input $(\MaliciousComplete, \key, \ssid)$ from $\advA$, if there is a record $(\userinput, \ssid, x, h)$ output $f(h,\key')$ \\
+        }
+       }
+    \caption{Ideal functionality for Function Evaluation on Random Inputs: $\funcFERI$.}
+    \label{fig:funcFERI}
+\end{figure}
+
+
+% Now I don't think we can instantiate F_FEORI with the blinding-exponentiate-unblinding protocol used by 2HashDH, but a slightly weaker version F_wFERI (w stands for weak by lack of a better name) should do the trick.
+
+
+
+\begin{figure}
+    \hspace*{-0.075\textwidth}\fbox{
+        \parbox{\funcwidth}{
+            \begin{center} \textbf{Ideal functionality $\funcwFERI^f$} \end{center} 
+
+            Parametrized by a function $f: \InputSpace \times \KeySpace \to \bits^*$\\
+            and $f^*: \InputSpace^* \times \KeySpace^* \to \bits^*$ 
+            and an efficiently computable permutation $\Pi_\KeySpace: \KeySpace \to \KeySpace^*$ 
+            and an efficiently computable permutation $\Pi_\InputSpace: \InputSpace* \to \InputSpace$
+            such that $f(\Pi_\InputSpace(i^*),\key) = f^*(i^*, \Pi_\KeySpace(\key))$ for all $i^* \in \InputSpace^*$ and all $\key \in \KeySpace$
+
+            Maintains a random function $\Hone: \bits^* \to\InputSpace^*$ \sebastian{not $\InputSpace$}\\
+
+            On input $\Init$ from $\Server$ , sample $\key$ from $\KeySpace$.\\
+
+            On input $(\UserEval, \ssid, x)$ from $\User$, store $\record{\userinput, \ssid, x, \Pi_\InputSpace(\Hone(x))}$\\
+
+            On input $(\CorruptUserEval, \ssid, h)$ from $\User$ with $h \in \InputSpace$, 
+            \begin{compactitem}
+               \item ignore if $\User$ is not corrupt 
+               \item otherwise store $\record{userinput, ssid, \bot , h}$
+            \end{compactitem} 
+
+            On input $(\ServerEval, \ssid)$ from $\Server$ store $\record{\serverStarted, ssid}$\\
+
+            On input $(\HonestComplete, \ssid)$ from $\advA$, if there are records $(\userinput, \ssid, x, h)$ and $(\serverStarted, \ssid)$ output $f(h,k)$ to $\User$\\ 
+
+            On input $(\MaliciousComplete, \key^*, \ssid)$ from $\advA$, if there is a record $\record{\userinput, \ssid, x, h}$ output $f^*(\Hone(x),\key^*)$
+       }
+    }
+    \caption{Ideal functionality for Weak Function Evaluation on Random Inputs: $\funcwFERI$.}
+    \label{fig:funcwFERI}
+\end{figure}
+
+
+
+\begin{figure}
+    \centering
+    \noindent\fbox{
+        \parbox{1.05\textwidth}{
+            \begin{center}\textbf{Compiler $\ProtocolOuter$}\end{center}
+            \emph{Public Parameters:} function $f\getsr\family$, output length $\secpar$.\\
+            \normalsize
+            \emph{Initialization:} \\
+            On input $(\Init, \sid)$: $\Server$ sends $(\Init,\ssid)$ to $\funcwFERI$ \\
+            
+            \emph{Server Compromise:}\\
+            On $(\Compromise,\sid)$, \sebastian{TODO} \\
+            
+            \emph{Offline Evaluation:}\\
+            \sebastian{TODO} \\
+            
+            \emph{Online Evaluation:}
+            \begin{compactitem}
+                \item On $(\Eval,\sid,\ssid,\Server',x)$, $\User$ sends $(\UserEval, \ssid, x)$ to $\funcwFERI^f$. 
+                
+                \item On $(\SndrComplete, \sid, \ssid')$, $\Server$ sends $(\ServerEval, \ssid)$ to $\funcwFERI^f$. 
+                
+                \item On receiving $(\ssid,y)$ from $\funcwFERI^f$, $\User$ outputs $\left(\Eval, \sid, \ssid,\Htwo\left(x, y \right)\right)$.
+        \end{compactitem}    
+        }
+    }
+    \caption{The compiler $\ProtocolOuter$ in the $\funcwFERI^f$-hybrid model, with hash function $\Htwo$ modeled as a random oracle.} 
+    \label{fig:protocol_outer}
+\end{figure}
+
+
+$\funcFERI$ is a special case of $\funcwFERI$, with $f = f^*, Pi_\KeySpace = \identity_\KeySpace$ and $\Pi_\InputSpace = \identity_\InputSpace$.
+
+% In the case of 2HashDH we have I = K* = group G, I* = K = set of exponents
+
+% f(X,k) := X^k
+
+% f*(x,K) :=K^x
+
+% and Pi_I = Pi_K = exponentiation with respect to some generator g: x -> g^x
