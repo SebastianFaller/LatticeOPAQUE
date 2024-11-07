@@ -27,7 +27,7 @@ Hash function $H:\bits^* \to \Zq^m$.
          &\LLarrow[16]{$(\vecy,\ct)$} & \\
         parse $(\ct_1,\ct_2,\ct_3)=\ct$ & & \\
         Round $\ct_2-(\vecy^\top,\vecx^\top)\ct_1$ to get $\mu$& & \\
-        $\akekey\gets H(\pw,\mu)$ & & \\
+        $\akekey\gets H(\pw,\mu) \oplus \ct_3$ & & \\
         Derive AKE keys from $\akekey$ & \fbox{AKE} & 
         \end{tabular}
     }
