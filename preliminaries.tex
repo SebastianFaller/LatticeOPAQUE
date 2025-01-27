@@ -48,3 +48,29 @@ In this section, we recap the model for symmetric/asymmetric PAKE by Bellare et 
     \caption{The BPR Model \cite{EC:BelPoiRog00}.}
     \label{fig:BPR}
 \end{figure}
+
+
+\subsection{Lattices}
+\cite{CCS:AKSY22}
+
+\begin{definition}
+    \label{def:omsis}
+    Let $q,n,m,\sigma,\beta$ be functions of the security parameter $\secpar$.
+    The $\OMSIS_{q,n,m,\sigma,\beta}$ assumption is defined using the following
+    experiment.
+    \begin{enumerate}
+        \item The challenger $\Challenger$ uniformly samples $\matC\in\Zq^{n\times m}$ and sends $\matC$ to the adversary $\advA$.
+        \item The adversary adaptively makes queries of the following types to the
+        challenger in any order.
+        \begin{itemize}
+            \item \textbf{Syndrome queries.} The adversary $\advA$ requests $\Challenger$ for a challenge vector, to which $\Challenger$ replies with
+            a uniformly random $\vect\getsr\Zq^n$. We denote the set of received vectors by $\setReceived$.
+            \item \textbf{Preimage queries.} The adversary $\advA$ queries a vector $\vect'\in\Zq^n$, to which $\Challenger$ replies with a short vector
+            $\vecy'\gets\Dist_{\Zq^m,\sigma}$ such that $\matC\cdot\vecy'=\vect'$.
+            We denote by $\ell$ the total number of preimage queries.
+        \end{itemize}
+        \item In the end, the adversary $\advA$ outputs $\ell+1$ pairs of the form
+        $\{(\vecy_j,\vect_j)\}_{j\in[\ell+1]}$.
+        \item The adversary wins if $\matC\cdot\vecy_j=\vect_j$,$\norm{\vecy_j}\leq\beta$ and $\vect_j\in\setReceived$ for all $j\in[\ell+1]$.
+    \end{enumerate}
+\end{definition}
