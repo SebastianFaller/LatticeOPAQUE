@@ -1,2 +1,50 @@
 % !TeX encoding = UTF-8
 % !TeX root = main.tex
+
+\subsection{The BPR Model}
+In this section, we recap the model for symmetric/asymmetric PAKE by Bellare et al. \cite{EC:BelPoiRog00}.
+
+\begin{figure}
+    % \centering
+    % \begin{minipage}[c]{0.97\textwidth}
+        \begin{tabularx}{\textwidth}{|lX|}
+            \hline
+            \textit{Initialization} & $\Hash\getsr\Omega$; $\langle \pw_\Aparty,\pw_\Bparty\rangle_{\Aparty\in\Clients,\Bparty\in\Servers}\getsr\LLkeyGen^\Hash()$\\
+                & for $i\in\NN$ and $\User\in\ID$ do\\
+                & \tab $\state_\User^i\gets\Ready$;
+                $\accept_\User^i\gets\terminate_\User^i\gets\used_\User^i\gets\False$\\
+                & \tab $\sid_\User^i\gets\pid_\User^i\gets\shk_\User^i\gets\Undef$\\
+            \hline
+            $\Send(\User,i,M)$ & $\used_\User^i\gets\True$; if $\terminate_\User^i$ then return $\Invalid$\\
+                & $\langle\msgout,\accept,\terminate_\User^i,\sid,\pid,\shk,\state_\User^i \rangle$ \\
+                & \tab $\gets \Protocol^\Hash(\langle\User,\pw_\User,\state_\User^i,M\rangle)$\\
+                & if $\accept$ and $\lnot\accept_\User^i$ then\\
+                & \tab $\sid_\User^i\gets\sid$;$\pid_\User^i\gets\pid$;$\shk_\User^i\gets\shk$;$\accept_\User^i\gets\True$\\
+                & return $\langle \msgout,\sid,\pid,\accept,\terminate_\User^i \rangle$\\
+            $\Reveal(\User,i)$ & return $\shk_\User^i$\\
+            $\Corrupt(\User,\pw)$ & if $\User\in\Clients$ and $\pw\neq\DontChange$ then\\
+                & \tab for $\Bparty\in\Servers$ do $\pw_\Bparty[\User] = \pw[\Bparty]$\\
+                & return $\langle \pw_\User,\{\state_\User^i\}_{i\in\NN}\rangle$\\
+            $\Execute(\Aparty,i,\Bparty,j)$ & if $\Aparty\notin\Clients$ or $\Bparty\notin\Servers$ or $\used_\Aparty^i$ or $\used_\Bparty^j$\\
+                & \tab then return $\Invalid$\\
+                & $\msgin\gets\Bparty$\\
+                & for $t\gets 1$ to $\infty$ do\\
+                & \tab $\langle \msgout,\sid,\pid,\accept,\terminate_\Aparty\rangle
+                    \gets\Send(\Aparty,i,\msgin)$\\
+                & \tab $\alpha_t\gets\langle\msgout,\sid,\pid,\accept,\terminate_\Aparty\rangle$\\
+                & if $\terminate_\Aparty$ and $\terminate_\Bparty$ then return $\langle\alpha_1,\beta_1,\alpha_2,\beta_2,\dots,\alpha_t\rangle$\\
+                & $\langle\msgout,\sid,\pid,\accept,\terminate_\Bparty\rangle
+                    \gets\Send(\Bparty,j,\msgin)$\\
+                & \tab $\beta_t\gets\langle\msgout,\sid,\pid,\accept,\terminate_\Bparty\rangle$\\
+                & if $\terminate_\Aparty$ and $\terminate_\Bparty$ then return
+                    $\langle\alpha_1,\beta_1,\dots,\alpha_t,\beta_t\rangle$\\
+                $\Test(\User,i)$ & $\shk\getsr\KeySpace$;$b\getsr\bits$;if $\lnot\terminate_\User^i$ then return $\Invalid$\\
+                    & if $b=1$ then return $\shk_\User^i$ else return $\shk$\\
+            \hline
+            $\Oracle(M)$ & return $\Hash(M)$\\
+            \hline
+        \end{tabularx}
+    % \end{minipage}
+    \caption{The BPR Model \cite{EC:BelPoiRog00}.}
+    \label{fig:BPR}
+\end{figure}

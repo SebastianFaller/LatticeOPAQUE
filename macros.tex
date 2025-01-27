@@ -80,6 +80,41 @@
 \newcommand{\bother}{\beta'}
 \newcommand{\stother}{\st'}
 
+% BPR Model
+\newcommand{\Protocol}{\mathsf{P}}
+\newcommand{\Hash}{H}
+\newcommand{\Send}{\mathsf{Send}}
+\newcommand{\Reveal}{\mathsf{Reveal}}
+\newcommand{\Corrupt}{\mathsf{Corrupt}}
+\newcommand{\Execute}{\mathsf{Execute}}
+\newcommand{\Test}{\mathsf{Test}}
+\newcommand{\Oracle}{\mathsf{Oracle}}
+\newcommand{\True}{\textsc{True}}
+\newcommand{\False}{\textsc{False}}
+\newcommand{\Ready}{\textsc{Ready}}
+\newcommand{\Invalid}{\textsc{Invalid}}
+\newcommand{\Undef}{\textsc{Undef}}
+\newcommand{\DontChange}{\textsc{DontChange}}
+\newcommand{\SessionKey}{\mathrm{SHK}}
+\newcommand{\Clients}{\mathrm{Clients}}
+\newcommand{\Servers}{\mathrm{Servers}}
+\newcommand{\NN}{N}
+\newcommand{\Aparty}{\mathrm{A}}
+\newcommand{\Bparty}{\mathrm{B}}
+\newcommand{\User}{\mathrm{U}}
+\newcommand{\used}{\mathrm{used}}
+\newcommand{\accept}{\mathrm{acc}}
+\newcommand{\terminate}{\mathrm{term}}
+\newcommand{\ID}{\mathrm{ID}}
+\newcommand{\sid}{\mathrm{sid}}
+\newcommand{\pid}{\mathrm{pid}}
+\newcommand{\shk}{\mathrm{shk}}
+\newcommand{\state}{\mathrm{state}}
+\newcommand{\msgout}{\mathrm{msg}\text{-}\mathrm{out}}
+\newcommand{\msgin}{\mathrm{msg}\text{-}\mathrm{in}}
+\newcommand{\LLkeyGen}{\mathsf{PW}}
+\newcommand{\tab}{\hspace{0.75em}}
+
 %OPRF
 \newcommand{\pw}{\mathsf{pw}}
 \newcommand{\Bad}{\mathsf{Bad}}
@@ -123,7 +158,7 @@
 
 % F_OPRF
 \newcommand{\domain}{\mathsf{dom}}
-\newcommand{\sid}{\mathrm{sid}}
+% \newcommand{\sid}{\mathrm{sid}}
 \newcommand{\ssid}{\mathrm{ssid}}
 \newcommand{\OfflineEval}{\textsc{OfflineEval}}
 \newcommand{\Init}{\textsc{Init}}
@@ -145,31 +180,7 @@
 \newcommand{\SimUC}{\Sim_{\mathrm{UC}}}
 
 
-% For F_OPRF^late-extract
-\newcommand{\Fcor}{f}
-\newcommand{\FlateExtract}{\mathcal{F}_{\text{2H-OPRF}}^{\Fcor}}
-\newcommand{\Tpreview}{\Table_{\text{preview}}}
-\newcommand{\Tprogrammed}{\Table_{\text{programmed}}}
-\newcommand{\Correlate}{\textsc{Correlate}}
-\newcommand{\Preview}{H_2}
-\newcommand{\Tseen}{\advkeys}
-\newcommand{\Table}{T}
-\newcommand{\Tkey}{\Table_{\mathrm{key}}}
-\newcommand{\ProtocolOuter}{\Pi^{\mathrm{outer}}}
 
-% F_FERI
-\newcommand{\User}{\mathrm{U}}
-\newcommand{\funcFERI}{\func_{\text{FERI}}}
-\newcommand{\funcwFERI}{\func_{\text{wFERI}}}
-\newcommand{\identity}{\mathrm{id}}
-\newcommand{\UserEval}{\mathsf{UsrEval}}
-% \newcommand{\ServerEval}{\mathsf{ServerEval}}
-\newcommand{\userinput}{\mathsf{userinput}}
-\newcommand{\CorruptUserEval}{\mathsf{CorruptUserEval}}
-\newcommand{\ServerEval}{\mathsf{ServerEval}}
-\newcommand{\serverStarted}{\mathsf{server}}
-\newcommand{\HonestComplete}{\mathsf{HonestComplete}}
-\newcommand{\MaliciousComplete}{\mathsf{MaliciousComplete}}
 
 %%Gray boxes:
 \newcommand{\greybox}[1]{\colorbox{lightgray!80}{#1}}

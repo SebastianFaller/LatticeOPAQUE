@@ -1,4 +1,4 @@
-# Forgettable Encryption
+# Lattice-based saPAKE 
 
 
 
