@@ -18,12 +18,12 @@ Hash function $H:\bits^* \to \Zq^m$.
         $\vecs\gets\Zq^m$ & &\\
         $\vece\gets \errorDist^n, e'\gets\errorDist$ & &\\
         $\ct_1 = \colCA\vecs+\vece$ & &\\
-        $\ct_2 = H(\pw)^\top\vecs+e'+\mu\cdot\qhalf$ & &\\
-        $\ct_3 = H'(\pw,\mu)\oplus \akekey$ \codecomment{$\akekey$ will be the AKE keys}& &\\
+        $\ct_2 = H(\Client,\pw)^\top\vecs+e'+\mu\cdot\qhalf$ & &\\
+        % $\ct_3 = H'(\pw,\mu)\oplus \akekey$ \codecomment{$\akekey$ will be the AKE keys}& &\\
          & \LRarrow[16]{$\ct=(\ct_1,\ct_2,\ct_3)$} & store $\ct$\\ \hdashline
           & Password Authentication & \\
         $\vecx\gets\errorDist^n$& &\\
-        $\vect=H(\pw)^\top + \vecx^\top\matA$ & & \\
+        $\vect=H(\Client,\pw)^\top + \vecx^\top\matA$ & & \\
          & \LRarrow[16]{$\vect$} & \\ 
          & & $\vecy\gets\SamplePre(\matC,\matT,\vect)$\\
          &\LLarrow[16]{$(\vecy,\ct)$} & \\

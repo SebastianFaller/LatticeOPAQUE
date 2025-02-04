@@ -1,0 +1,43 @@
+% !TeX encoding = UTF-8
+% !TeX root = main.tex
+
+%this is selective secure IBE.
+%Modify it to get the key storage thing, we need.
+\begin{itemize}
+    \item $\pw^*\gets\advA(1^\secpar)$
+    \item $pp\gets\Setup(1^\secpar)$
+    \item $\mu\gets\advA^{\Oracle,\Hash}(pp)$
+    \item $\mu_0\coloneqq\mu;\mu_1\getsr\{0,1\}$
+    \item $\ct\gets\Enc(\pk,\pw,\mu_b)$
+    \item $b'\gets\advA^{\Oracle,\Hash}(pp,\ct)$
+\end{itemize}
+Where $\Oracle(\pw)$ outputs $(\sk_\pw)\gets\KeyGen(\sk,\pw)$ if $\pw\neq\pw^*$.
+
+
+Intuitively, the adversary has to commit before seeing pp to which password file he wants to be challenged on. This means in particular, to which AKE session he wants to be challenged on.
+
+Security guarantee basically is that if the adversary guesses many passwords $\pw'\neq\pw^*$,
+the session of a user with password $\pw^*$ is still secure.
+
+Correspondances BPR and IBE:
+\begin{itemize}
+    \item $\Reveal(\User,i)$ should be dealt with the AKE protocol. Revealing SHK should actually not jeopardize the sk used to create it.
+    \item $\Corrupt$:
+    \begin{itemize}
+        \item Corrupt Server: This allows OfflineTestPwd against Client's pwd. Should just correspond to $\Hash(\Client,\pw)$ query because a corrupted session cannot be tested anyways.
+        \item Corrupt Clients: Should just correspond to $\Hash(\Client,\pw)$ query because a corrupted session cannot be tested anyways.
+    \end{itemize} 
+    \item $\Execute$ this should be blindness of the blind signature + security of AKE for honest-honest KE.
+    \item $\Test$ translate to $\ct$. If $\ct$ is secure it doesn't reveal AKE key, which means AKE $shk$ is indist. from random.
+    This means $\Test$ must commit the adversary before seeing $pp$.\sebastian{Potential problem: Test commits $\advA$ to $(\Client,i)$ not to $(\Client,\pw)$}
+\end{itemize}
+Can you ask $\Test$ query for a corrupted session?
+\sebastian{In BPR $\Test$ is just asked once.}
+
+Gap to UC, adversary can adaptively decide on which session it wants to test.
+It can even require a test for many sessions.
+This requires idealized encryptio schemes like
+equivocal encryption \cite{EC:JarKraXu18}.
+
+Interestingly, I don't think we get the fs version of BPR security even if AKE admits forward secrecy.
+The reason is that if the adversary committed to testing a session, we will not have a preimage of $H(\Client,\pw)$ and thus no AKE secret key encrypted. So we cannot make it up after the fact.
